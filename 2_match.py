@@ -85,7 +85,6 @@ def keypoints_within_box(
     y_max = box[3] - edgeThreshold
     x = keypoints_in[:, 0]
     y = keypoints_in[:, 1]
-    # TODO: add padding
     mask = (y_min <= y) & (y <= y_max) & (x_min <= x) & (x <= x_max)
     return keypoints_in[mask], descriptors_in[mask]
 
@@ -112,7 +111,6 @@ class Pattern:
         return Pattern(box, new_keypoints, new_descriptors)
 
     def similarity(self, other: Pattern) -> float:
-        # todo, fixme and write something
         intersection = self.box.intersection(other.box)
         if not intersection:
             return 0
@@ -129,17 +127,14 @@ class Pattern:
         pct_matched = num_matched / min(len(self.descriptors), len(other.descriptors))
         if pct_matched < 0.8:  # fix this hardcode!
             return 0
-
-        # todo: also add percent matched points within small radius
-        r = 10
-
+        dist_thresh = 10 # Hardcode
         idx_self = [i.queryIdx for i in matches]
         idx_other = [i.trainIdx for i in matches]
 
         pts_self = self.keypoints[idx_self]
         pts_other = other.keypoints[idx_other]
-        dist = np.linalg.norm(pts_self - pts_other, axis=1)
-        pct_inlier = sum(dist < r) / len(dist)
+        dist = np.linalg.norm(pts_self - pts_other, axis=1) # fixme, use squared euclidean for speed gains in real code!
+        pct_inlier = sum(dist < dist_thresh) / len(dist)
         print(pct_inlier)
 
         return pct_inlier
