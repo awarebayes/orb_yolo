@@ -121,7 +121,6 @@ class Pattern:
         matches = matcher.match(self.descriptors, other.descriptors)
         if not matches:
             return 0
-        matches = sorted(matches, key=lambda x: x.distance)
         num_matched = len(matches)
 
         pct_matched = num_matched / min(len(self.descriptors), len(other.descriptors))
